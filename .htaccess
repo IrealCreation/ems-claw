@@ -1,0 +1,11 @@
+Options +FollowSymLinks -MultiViews -Indexes
+
+# Index
+DirectoryIndex controllers/index.php
+
+# --- Redirection d'URL
+RewriteEngine On
+RewriteBase "/"
+
+# Générique
+RewriteRule ^([a-zA-Z_]+)/*$ controllers/$1.php [L]
