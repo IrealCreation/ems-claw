@@ -1,5 +1,8 @@
 <?php 
 
+/**
+ * Utilisateur inscrit au site
+ */
 class Utilisateur extends Db {
 
     protected static string $db_table = "utilisateur";
