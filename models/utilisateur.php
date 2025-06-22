@@ -80,7 +80,7 @@ class Utilisateur extends Db {
 
         if(count($result) > 0 && password_verify($password, $result[0]["password"])) {
             // Deuxième requête pour récupérer les infos en cas de connexion réussie
-            $query = "SELECT * FROM utilisateur WHERE login = ?";
+            $query = "SELECT id, pseudo, is_admin FROM utilisateur WHERE login = ?";
             $params = [$login];
             $result = self::fetch($query, $params, "Utilisateur");
             $utilisateur = $result[0];
