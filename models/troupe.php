@@ -59,5 +59,10 @@ class Troupe extends Db {
      */
     public int $nb_blessees = 0;
 
-    
+    /**
+     * Nombre d'unités fortifiées dans cette troupe (seulement si en garrison)
+     * 
+     * @var integer
+     */
+    public int $nb_fortifiees = 0;
 }

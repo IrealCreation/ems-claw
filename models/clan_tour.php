@@ -1,48 +1,25 @@
 <?php 
 
 /**
- * Clan lycéen au sein d'une partie
+ * Snapshot de l'état d'un clan au début d'un tour de jeu, effectué automatiquement à chaque début de tour et pouvant être récupéré par l'espionnage web.
  */
-class Clan extends Db {
+class ClanTour extends Db {
 
-    protected static string $db_table = "clan";
+    protected static string $db_table = "clan_tour";
 
-    protected static array $ignored_columns = [];
-    
     /**
-     * Utilisateur qui joue ce clan
+     * Id du clan dont est ce snapshot
      *
      * @var integer
      */
-    public int $utilisateur_id;
-    
+    public int $clan_id;
+
     /**
-     * Partie où est jouée ce clan
+     * Tour de jeu auquel ce snapshot correspond
      *
      * @var integer
      */
-    public int $partie_id;
-
-    /**
-     * Nom du clan
-     *
-     * @var string
-     */
-    public string $nom;
-
-    /**
-     * Couleur du clan (en hexadécimal)
-     *
-     * @var string
-     */
-    public string $couleur;
-
-    /**
-     * Idéologie du clan
-     *
-     * @var Ideologie
-     */
-    public Ideologie $ideologie;
+    public int $tour;
 
     /**
      * Nombre de troupes dans ce clan
