@@ -5,7 +5,26 @@
  */
 class Unite {
 
-    public static array $liste = [];
+    /**
+     * Liste des unités existantes dans le jeu
+     *
+     * @var array
+     */
+    private static array $liste = [];
+
+    /**
+     * Liste des unités lycéennes existantes dans le jeu
+     *
+     * @var array
+     */
+    private static array $liste_clan = [];
+
+    /**
+     * Liste des unités de la vie scolaire existantes dans le jeu
+     *
+     * @var array
+     */
+    private static array $liste_vie_scolaire = [];
 
     public readonly int $id;
 
@@ -51,9 +70,65 @@ class Unite {
         $this->atk = $atk;
         $this->def = $def;
         $this->lyceen = $lyceen;
+        
+        // Enregistrement de l'unité dans les listes statiques appropriées
+        if($lyceen) {
+            self::$liste_clan[$this->id] = $this; // Ajout à la liste des unités lycéennes
+        } else {
+            self::$liste_vie_scolaire[$this->id] = $this; // Ajout à la liste des unités de la vie scolaire
+        }
 
         // Ajout de l'unité à la liste statique
         self::$liste[$this->id] = $this;
+    }
+
+    /**
+     * Récupère la liste des unités existantes dans le jeu
+     *
+     * @return array<Unite>
+     */
+    public static function getListe(): array {
+        if(empty(self::$liste)) {
+            self::init(); // Initialisation des unités prédéfinies si la liste est vide
+        }
+        return self::$liste;
+    }
+
+    /**
+     * Récupère la liste des unités lycéennes existantes dans le jeu
+     *
+     * @return array<Unite>
+     */
+    public static function getListeClan(): array {
+        if(empty(self::$liste_clan)) {
+            self::init(); // Initialisation des unités prédéfinies si la liste est vide
+        }
+        return self::$liste_clan;
+    }
+
+    /**
+     * Récupère la liste des unités de la vie scolaire existantes dans le jeu
+     *
+     * @return array<Unite>
+     */
+    public static function getListeVieScolaire(): array {
+        if(empty(self::$liste_vie_scolaire)) {
+            self::init(); // Initialisation des unités prédéfinies si la liste est vide
+        }
+        return self::$liste_vie_scolaire;
+    }
+
+    /**
+     * Récupère une unité par son ID
+     *
+     * @param integer $id
+     * @return Unite|null
+     */
+    public static function getById(int $id): ?Unite {
+        if(empty(self::$liste)) {
+            self::init(); // Initialisation des unités prédéfinies si la liste est vide
+        }
+        return self::$liste[$id] ?? null; // Retourne l'unité ou null si elle n'existe pas
     }
 
     /**
@@ -61,7 +136,7 @@ class Unite {
      *
      * @return void
      */
-    public static function init() {
+    private static function init() {
         // Unités lycéennes
         new Unite("Militant", 10, 10, 10);
         new Unite("Casseur", 20, 25, 15);

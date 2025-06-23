@@ -51,6 +51,14 @@ class Clan extends Db {
      */
     public int $nb_troupes = 0;
 
+    /**
+     * Liste des troupes en réserve de ce clan
+     * Une troupes_liste est un tableau associatif dont les clés sont les id des unités et les valeurs sont les objets Troupe
+     * 
+     * @var array<int, Troupe>
+     */
+    private array $troupes_liste = [];
+
     /* --- Ressources --- */
     public int $argent = 0;
     public int $culture = 0;
@@ -66,4 +74,32 @@ class Clan extends Db {
     public int $tech_web = 0;
     public int $tech_hierarchie = 0;
     public int $tech_diplomatie = 0;
+
+    public function __construct() {
+        parent::__construct();
+        
+        // On initialise la liste des troupes en réserve du clan
+        $unites = Unite::getListeClan();
+        foreach($unites as $unite) {
+            $this->troupes_liste[$unite->id] = new Troupe();
+            $this->troupes_liste[$unite->id]->unite_id = $unite->id;
+            $this->troupes_liste[$unite->id]->insert(); // On insère une nouvelle troupes vide pour chaque unité
+        }
+    }
+    
+    /**
+     * Récupère la liste des troupes en réserve du clan
+     * 
+     * @return array<int, Troupe> Tableau associatif dont les clés sont les id des unités et les valeurs sont les objets Troupe
+     */
+    public function getTroupesListe(): array {
+        if(empty($this->troupes_liste)) {
+            $troupes = Troupe::selectReserveClan($this->id);
+            // On remplit la liste des troupes en réserve du clan en fonction des id des unités
+            foreach($troupes as $troupe) {
+                $this->troupes_liste[$troupe->unite_id] = $troupe;
+            }
+        }
+        return $this->troupes_liste;
+    }
 }
