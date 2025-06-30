@@ -3,21 +3,21 @@
 /**
  * Clan lycéen au sein d'une partie
  */
-class Clan extends Db {
+class VieScolaire extends Db {
 
-    protected static string $db_table = "clan";
+    protected static string $db_table = "vie_scolaire";
 
     protected static array $ignored_columns = ["troupes_liste", "salles"];
     
     /**
-     * Utilisateur qui joue ce clan
+     * Utilisateur qui joue cette vie scolaire
      *
      * @var integer
      */
     public int $utilisateur_id;
     
     /**
-     * Partie où est jouée ce clan
+     * Partie où est jouée cette vie scolaire
      *
      * @var integer
      */
@@ -29,30 +29,18 @@ class Clan extends Db {
      * @var string
      */
     public string $nom;
+    
+    // TODO: bonus de départ
 
     /**
-     * Couleur du clan (en hexadécimal)
-     *
-     * @var string
-     */
-    public string $couleur;
-
-    /**
-     * Idéologie du clan
-     *
-     * @var Ideologie
-     */
-    public Ideologie $ideologie;
-
-    /**
-     * Nombre de troupes dans ce clan
+     * Nombre de troupes dans cette vie scolaire
      * 
      * @var integer
      */
     public int $nb_troupes = 0;
 
     /**
-     * Liste des troupes en réserve de ce clan
+     * Liste des troupes en réserve de cette vie scolaire
      * Une troupes_liste est un tableau associatif dont les clés sont les id des unités et les valeurs sont les objets Troupe
      * 
      * @var array<int, Troupe>
@@ -60,7 +48,7 @@ class Clan extends Db {
     private array $troupes_liste = [];
 
     /**
-     * Salles contrôlées par ce clan
+     * Salles contrôlées par cette vie scolaire
      *
      * @var array
      */
@@ -68,16 +56,14 @@ class Clan extends Db {
 
     /* --- Ressources --- */
     public int $argent = 0;
-    public int $culture = 0;
-    public int $savoir = 0;
+    public int $pacification = 0;
     public int $web = 0;
 
     /* --- Technologies --- */
     public int $tech_atk = 0;
     public int $tech_def = 0;
     public int $tech_argent = 0;
-    public int $tech_culture = 0;
-    public int $tech_savoir = 0;
+    public int $tech_pacification = 0;
     public int $tech_web = 0;
     public int $tech_hierarchie = 0;
     public int $tech_diplomatie = 0;
@@ -86,11 +72,11 @@ class Clan extends Db {
         parent::insert();
         
         // On initialise la liste des troupes en réserve du clan
-        $unites = Unite::getListeClan();
+        $unites = Unite::getListeVieScolaire();
         foreach($unites as $unite) {
             $this->troupes_liste[$unite->id] = new Troupe();
             $this->troupes_liste[$unite->id]->unite_id = $unite->id;
-            $this->troupes_liste[$unite->id]->clan_id = $this->id;
+            $this->troupes_liste[$unite->id]->vie_scolaire_id = $this->id;
             $this->troupes_liste[$unite->id]->insert(); // On insère une nouvelle troupes vide pour chaque unité
         }
     }
@@ -102,7 +88,7 @@ class Clan extends Db {
      */
     public function getTroupesListe(): array {
         if(empty($this->troupes_liste)) {
-            $troupes = Troupe::selectReserveClan($this->id);
+            $troupes = Troupe::selectReserveVieScolaire($this->id);
             // On remplit la liste des troupes en réserve du clan en fonction des id des unités
             foreach($troupes as $troupe) {
                 $this->troupes_liste[$troupe->unite_id] = $troupe;
@@ -112,7 +98,7 @@ class Clan extends Db {
     }
 
     /**
-     * Renvoie les salles contrôlées par ce clan
+     * Renvoie les salles contrôlées par cette vie scolaire (clan_id null)
      *
      * @return array<Salle>
      */
@@ -120,7 +106,7 @@ class Clan extends Db {
         if(empty($this->salles)) {
             $salles = Partie::$current->getSalles();
             foreach($salles as $salle) {
-                if($salle->clan_id == $this->id) {
+                if($salle->clan_id == null) {
                     $this->salles[] = $salle;
                 }
             }

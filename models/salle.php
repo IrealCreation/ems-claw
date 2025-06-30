@@ -75,4 +75,16 @@ class Salle extends Db {
     public function getGainWeb(): int {
         return $this->web + ($this->amenagement_web ? 1 : 0);
     }
+
+    /**
+     * Sélectionne toutes les salles d'une partie donnée (appelé dans Partie::getSalles())
+     *
+     * @param integer $partie_id
+     * @return array<Salle>
+     */
+    public static function selectByPartieId(int $partie_id): array {
+        $sql = "SELECT * FROM salle WHERE partie_id = ?";
+        $params = [$partie_id];
+        return self::fetch($sql, $params, static::$db_table);
+    }
 }

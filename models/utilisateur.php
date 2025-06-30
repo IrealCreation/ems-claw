@@ -52,6 +52,14 @@ class Utilisateur extends Db {
     public bool $is_admin;
 
     /**
+     * Partie dans laquelle cet utilisateur est en train de jouer
+     * TODO: créer une fonction permettant de switcher de partie (actuelle c'est défini à la connexion)
+     *
+     * @var integer|null
+     */
+    public ?int $partie_id = null;
+
+    /**
      * Change le mot de passe de l'utilisateur
      *
      * @param string $password Nouveau mot de passe de l'utilisateur
@@ -80,13 +88,14 @@ class Utilisateur extends Db {
 
         if(count($result) > 0 && password_verify($password, $result[0]["password"])) {
             // Deuxième requête pour récupérer les infos en cas de connexion réussie
-            $query = "SELECT id, pseudo, is_admin FROM utilisateur WHERE login = ?";
+            $query = "SELECT id, pseudo, is_admin, partie_id FROM utilisateur WHERE login = ?";
             $params = [$login];
             $result = self::fetch($query, $params, "Utilisateur");
             $utilisateur = $result[0];
             $_SESSION["utilisateur_id"] = $utilisateur->id;
             $_SESSION["utilisateur_pseudo"] = $utilisateur->pseudo;
             $_SESSION["utilisateur_admin"] = $utilisateur->is_admin;
+            $_SESSION["partie_id"] = $utilisateur->partie_id;
             return true;
         }
         return false;
@@ -113,6 +122,10 @@ class Utilisateur extends Db {
         if(isset($_SESSION["utilisateur_id"]) && $_SESSION["utilisateur_id"] > 0) {
             if($admin && !$_SESSION["utilisateur_admin"]) {
                 return false;
+            }
+            // Si l'utilisateur est dans une partie, on la définit dans Partie::$current_partie
+            if(isset($_SESSION["partie_id"]) && $_SESSION["partie_id"] != null) {
+                Partie::$current = Partie::selectById($_SESSION["partie_id"]);
             }
             return true;
         }
